@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <style>
+            
+        </style>
+        <script>
+            const LOCAL_URL = 'http://localhost:5000'
+            const view = () => {
+                console.log("called view")
+                fetch('http://127.0.0.1:5000/cards')
+                    .then((response) => response.json())
+                    .then((data) => console.log(data));
+            }
+
+            const add = () => {
+                console.log("Called add()");
+                let raw_value = document.getElementById("input").value
+                console.log(`${raw_value}`)
+                // flash card format regex: [term]: [definition]
+                const FC_REGEX = /[a-zA-Z]: [a-zA-Z]/i;
+                // todo1:
+                // actually match the input value
+                // tell the user if fails
+                // todo2:
+                // support different formats
+                let flashcard_content = raw_value.split(":");
+                let flashcard_content_json = {
+                    "term": `${flashcard_content[0]}`,
+                    "definition": `${flashcard_content[1]}`
+                };
+                console.log(`${flashcard_content_json}`);
+                console.log(`${JSON.stringify(flashcard_content_json)}`)
+                fetch('http://127.0.0.1:5000/cards', {
+                    method: 'POST',
+                    mode: "cors",
+                    credentials: "same-origin",
+                    body: JSON.stringify(flashcard_content_json),
+                    headers: {'Content-Type': 'application/json'},
+                }).then((response) => {
+                    return response.json();
+                }).then((data) => {
+                    console.log("New entry sent")
+                });
+            }
+        </script>
+    </head>
+    
+    <body>
+        <input type="text" id="input">
+        <button id = "submit" onclick = "add()">Click to generate flashcards</button>
+        <button id = "viewer" onclick = "view()">Click to view created flashcards</button>
+    </body>
+</html>
